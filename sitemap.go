@@ -43,7 +43,7 @@ func (s *Sitemap) AddURLSet(u *URLSet) error {
 
 	s.Sitemaps[name] = u
 	s.Index.Sitemap = append(s.Index.Sitemap, IndexSitemap{
-		Loc:     path.Join(s.URL, name),
+		Loc:     strings.TrimSuffix(s.URL, "/") + path.Join("/", name),
 		Lastmod: time.Now().Format("2006-01-02"),
 	})
 
