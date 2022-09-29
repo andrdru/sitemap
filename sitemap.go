@@ -3,6 +3,7 @@ package sitemap
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -12,6 +13,8 @@ var IndexName = "/sitemap.xml"
 var URLSetName = "/sitemap.%d.xml"
 
 type Sitemap struct {
+	URL string
+
 	mu sync.Mutex
 
 	Index    *Index
@@ -21,13 +24,14 @@ type Sitemap struct {
 	sitemapsData map[string][]byte
 }
 
-func NewSitemap() *Sitemap {
+func NewSitemap(url string) *Sitemap {
 	return &Sitemap{
 		mu:       sync.Mutex{},
 		Index:    NewIndex(),
 		Sitemaps: make(map[string]*URLSet),
 
 		sitemapsData: make(map[string][]byte),
+		URL:          url,
 	}
 }
 
@@ -39,7 +43,7 @@ func (s *Sitemap) AddURLSet(u *URLSet) error {
 
 	s.Sitemaps[name] = u
 	s.Index.Sitemap = append(s.Index.Sitemap, IndexSitemap{
-		Loc:     name,
+		Loc:     path.Join(s.URL, name),
 		Lastmod: time.Now().Format("2006-01-02"),
 	})
 

@@ -12,7 +12,7 @@ import (
 func main() {
 	router := httprouter.New()
 
-	s := sitemap.NewSitemap()
+	s := sitemap.NewSitemap("http://localhost:8080")
 
 	urlset1 := sitemap.NewURLSet()
 	urlset1.URL = append(urlset1.URL, sitemap.URL{
