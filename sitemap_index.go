@@ -10,13 +10,15 @@ const (
 	xmlns = "https://www.sitemaps.org/schemas/sitemap/0.9/"
 )
 
+type IndexSitemap struct {
+	Loc     string `xml:"loc"`
+	Lastmod string `xml:"lastmod,omitempty"`
+}
+
 type Index struct {
-	XMLName xml.Name `xml:"sitemapindex"`
-	Xmlns   string   `xml:"xmlns,attr"`
-	Sitemap []struct {
-		Loc     string `xml:"loc"`
-		Lastmod string `xml:"lastmod,omitempty"`
-	} `xml:"sitemap"`
+	XMLName xml.Name       `xml:"sitemapindex"`
+	Xmlns   string         `xml:"xmlns,attr"`
+	Sitemap []IndexSitemap `xml:"sitemap"`
 }
 
 func NewIndex() *Index {

@@ -16,15 +16,17 @@ const (
 	FreqNewer   = "never" // The value "never" should be used to describe archived URLs.
 )
 
+type URL struct {
+	Loc        string `xml:"loc"`
+	Lastmod    string `xml:"lastmod,omitempty"`
+	Changefreq string `xml:"changefreq,omitempty"`
+	Priority   string `xml:"priority,omitempty"`
+}
+
 type URLSet struct {
 	XMLName xml.Name `xml:"urlset"`
 	Xmlns   string   `xml:"xmlns,attr"`
-	URL     []struct {
-		Loc        string `xml:"loc"`
-		Lastmod    string `xml:"lastmod,omitempty"`
-		Changefreq string `xml:"changefreq,omitempty"`
-		Priority   string `xml:"priority,omitempty"`
-	} `xml:"url"`
+	URL     []URL    `xml:"url"`
 }
 
 func NewURLSet() *URLSet {
