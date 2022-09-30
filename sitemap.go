@@ -1,6 +1,8 @@
 package sitemap
 
 import (
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"net/http"
 	"path"
@@ -10,7 +12,13 @@ import (
 )
 
 var IndexName = "/sitemap.xml"
-var URLSetName = "/sitemap.%d.xml"
+var URLSetName = "/sitemap.%d.xml.gz"
+
+type (
+	marshaler interface {
+		Marshal() (data []byte, err error)
+	}
+)
 
 type Sitemap struct {
 	URL string
@@ -65,13 +73,35 @@ func (s *Sitemap) flush() (err error) {
 	}
 
 	for name := range s.Sitemaps {
-		s.sitemapsData[name], err = s.Sitemaps[name].Marshal()
+		s.sitemapsData[name], err = gzipXML(s.Sitemaps[name])
 		if err != nil {
 			return fmt.Errorf("marshal sitemap %s: %w", name, err)
 		}
 	}
 
 	return nil
+}
+
+func gzipXML(m marshaler) (data []byte, err error) {
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
+
+	var tmpData []byte
+	tmpData, err = m.Marshal()
+	if err != nil {
+		return nil, fmt.Errorf("marshal: %w", err)
+	}
+
+	_, err = zw.Write(tmpData)
+	if err != nil {
+		return nil, fmt.Errorf("gzip write: %w", err)
+	}
+
+	if err = zw.Close(); err != nil {
+		return nil, fmt.Errorf("gzip close: %w", err)
+	}
+
+	return buf.Bytes(), nil
 }
 
 func (s *Sitemap) Store() error {
