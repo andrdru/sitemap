@@ -111,19 +111,20 @@ func (s *Sitemap) Store() error {
 // Handler handle sitemap inmemory
 func (s *Sitemap) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		path := strings.ToLower(r.URL.Path)
+		filePath := strings.ToLower(r.URL.Path)
 
-		if path == IndexName {
+		if filePath == IndexName {
 			_, _ = w.Write(s.indexData)
 			return
 		}
 
-		data, ok := s.sitemapsData[path]
+		data, ok := s.sitemapsData[filePath]
 		if !ok {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
+		w.Header().Add("Content-Type", "application/gzip")
 		_, _ = w.Write(data)
 		return
 	}
